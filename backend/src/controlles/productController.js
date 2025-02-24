@@ -3,8 +3,7 @@ import pool from "../config/db.js";
 async function getAllProduct(req, res) {
     try {
         const products = await pool.query("SELECT * FROM products");
-        console.log(products.rows);
-        // res.status(200).json(products);
+        res.status(200).json(products.rows);
     }
     catch(error){
         console.error(error);
