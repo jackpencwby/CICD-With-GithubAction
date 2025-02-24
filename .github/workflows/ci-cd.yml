@@ -1,0 +1,30 @@
+name: CI/CD with github action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    step:
+      - name: Checkout Repository
+        uses: action/checkout@v3
+    
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            cd CICD-With-GithubAction
+            git pull origin main
+            cd backend
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
+          EOF 
