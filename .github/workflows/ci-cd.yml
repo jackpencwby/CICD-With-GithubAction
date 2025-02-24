@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    step:
+    steps:
       - name: Checkout Repository
         uses: action/checkout@v3
     
@@ -21,7 +21,7 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd CICD-With-GithubAction
+            cd /home/jack/CICD-With-GithubAction
             git pull origin main
             docker compose down
             docker compose build --no-cache
