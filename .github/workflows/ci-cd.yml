@@ -9,21 +9,25 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    step:
+    steps:
       - name: Checkout Repository
-        uses: action/checkout@v3
+        uses: actions/checkout@v3
     
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: Install Tailscale
+        run: |
+          curl -fsSL https://tailscale.com/install.sh | sh
+          sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }}
       
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd CICD-With-GithubAction
-            git pull origin main
-            docker compose down
-            docker compose build --no-cache
-            docker compose up -d
-          EOF 
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+            cd /home/jack/CICD-With-GithubAction &&
+            git pull origin main && 
+            docker-compose down &&
+            docker-compose build --no-cache &&
+            docker-compose up -d"
